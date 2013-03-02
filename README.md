@@ -1,5 +1,5 @@
 reloadJaneAustin
 ================
 
-A Text Classifier and Random Text Generator
+A Text Classifier and Random Text Generator. 
 Using Machine Learning for Building a silly hack
