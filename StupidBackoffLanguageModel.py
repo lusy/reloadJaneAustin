@@ -6,6 +6,7 @@ class StupidBackoffLanguageModel:
         """Initialize your data structures in the constructor."""
         self.unigramCounts = collections.defaultdict(lambda: 0)
         self.bigramCounts = collections.defaultdict(lambda: 0)
+        self.fromUniToBiGrams = collections.defaultdict(lambda: 0)
         self.total = 0
         self.train(corpus)
 
@@ -24,6 +25,11 @@ class StupidBackoffLanguageModel:
         for bidatum in bitokens:
             tokenbi = (bidatum[0], bidatum[1])
             self.bigramCounts[tokenbi] = self.bigramCounts[tokenbi] + 1
+            try:
+                isThere = self.fromUniToBiGrams[bidatum[0]]
+                self.fromUniToBiGrams[bidatum[0]].append(bidatum[1])
+            except:
+                self.fromUniToBiGrams[bidatum[0]] = [bidatum[1]]
 
     def score(self, sentence):
         """ Takes a list of strings as argument and returns the log-probability of the
