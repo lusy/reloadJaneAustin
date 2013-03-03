@@ -18,13 +18,46 @@ def randomText (inputText, length):
     print "unigramCounts: ", lm.unigramCounts
 
     vocab = lm.unigramCounts.keys()
+    print "bigramCounts: ", lm.bigramCounts
+
+    print "test......................."
+    for x in lm.bigramCounts.keys():
+        if x[0] == 'and':
+            print x[1]
+    print "................."
+    print "fromUniToBi: ", lm.fromUniToBiGrams
 
     maxIndex = len(vocab) - 1
 
+"""
+# current version
     randText = []
     for i in range(length):
-        # picking between 5 and 15 different next words, computing the lm score and chosing the best one
         tempNextWords = dict()
+        # creates a copy of randText and not a second reference to it!!!!!
+        tmpRandomText = randText[:]
+        # if random text empty, pick a first word at random
+        if len(tmpRandomText) == 0:
+            randomIndex = random.randint(0,maxIndex)
+            tmpRandomText.append(vocab[randomIndex])
+        # otherwise we've got at leat one word in the random text and we select the last one
+        else:
+            lastWord = tmpRandomText[len(tmpRandomText) - 1]
+            # if lastWord is only once in input text
+            if lm.unigramCounts[lastWord] == 1:
+                coin = random.randint(0,1)
+                # with 50% prob pick 2. part of bigram
+                if coin == 0:
+                    print "lalala: need dict from uni to bigrams"
+                # with 50% prob pick random word from vocab
+                else:
+                    randomIndex = random.randint(0,maxIndex)
+                    tmpRandomText.append(vocab[randomIndex])
+"""
+
+"""
+        # old version
+        # picking between 5 and 15 different next words, computing the lm score and chosing the best one
         # creates a copy of randText and not a second reference to it!!!!!
         tmpRandomText = randText[:]
         for j in range(random.randint(15,30)):
@@ -42,16 +75,11 @@ def randomText (inputText, length):
         randText.append(bestWord)
         if i== 0:
             print "randText after: ", randText
-
-
-
-
-#        randomIndex = random.randint(0,maxIndex)
-#        randText.append(vocab[randomIndex])
-
-    return " ".join(randText)
+"""
+    #return " ".join(randText)
 
 """
+    # oldest version
     bagOfWords = inputText.split()
     maxIndex = len(bagOfWords) - 1
 
