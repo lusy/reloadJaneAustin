@@ -15,45 +15,55 @@ Plan:
 def randomText (inputText, length):
     lm = StupidBackoffLanguageModel(inputText)
 
-    print "unigramCounts: ", lm.unigramCounts
+    #print "unigramCounts: ", lm.unigramCounts
 
     vocab = lm.unigramCounts.keys()
-    print "bigramCounts: ", lm.bigramCounts
+    #print "bigramCounts: ", lm.bigramCounts
 
-    print "test......................."
-    for x in lm.bigramCounts.keys():
-        if x[0] == 'and':
-            print x[1]
-    print "................."
-    print "fromUniToBi: ", lm.fromUniToBiGrams
+    #print "test......................."
+    #for x in lm.bigramCounts.keys():
+    #    if x[0] == 'and':
+    #        print x[1]
+    #print "................."
+    #print "fromUniToBi: ", lm.fromUniToBiGrams
 
     maxIndex = len(vocab) - 1
 
-"""
-# current version
+    # current version
     randText = []
     for i in range(length):
         tempNextWords = dict()
-        # creates a copy of randText and not a second reference to it!!!!!
-        tmpRandomText = randText[:]
         # if random text empty, pick a first word at random
-        if len(tmpRandomText) == 0:
+        if len(randText) == 0:
             randomIndex = random.randint(0,maxIndex)
-            tmpRandomText.append(vocab[randomIndex])
+            randText.append(vocab[randomIndex])
         # otherwise we've got at leat one word in the random text and we select the last one
         else:
-            lastWord = tmpRandomText[len(tmpRandomText) - 1]
+            lastWord = randText[len(randText) - 1]
             # if lastWord is only once in input text
             if lm.unigramCounts[lastWord] == 1:
                 coin = random.randint(0,1)
                 # with 50% prob pick 2. part of bigram
                 if coin == 0:
-                    print "lalala: need dict from uni to bigrams"
+                    try:
+                        isItTheLastCorpusWord = lm.fromUniToBiGrams[lastWord]
+                        randText.append((lm.fromUniToBiGrams[lastWord])[0])
+                    except:
+                        randomIndex = random.randint(0,maxIndex)
+                        randText.append(vocab[randomIndex])
+
                 # with 50% prob pick random word from vocab
                 else:
                     randomIndex = random.randint(0,maxIndex)
-                    tmpRandomText.append(vocab[randomIndex])
-"""
+                    randText.append(vocab[randomIndex])
+            # if lastWord is more than once in corpus, pick one of the possible bigrams
+            else:
+                possibleBis = lm.fromUniToBiGrams[lastWord]
+                dice = random.randint(0,len(possibleBis)-1)
+                randText.append(possibleBis[dice])
+
+    return " ".join(randText)
+
 
 """
         # old version
@@ -99,15 +109,27 @@ def main():
     languageModelAlice = StupidBackoffLanguageModel(input_alice)
     vocabAlice = languageModelAlice.unigramCounts.keys()
 
+    input_alice_file = open("test_corpus_download/alice_chapter1", "r")
+    input_alice_2 = input_alice_file.read()
+    input_alice_2.replace('\n', ' ')
+
+    input_ja_file = open("test_corpus_download/sense_and_sensibility_chapter1", "r")
+    input_ja = input_ja_file.read()
+    input_ja.replace('\n', ' ')
+
+
     print 'Random Alice Text:\n '
-    print randomText(input_alice.split(" "),300)
+    #print randomText(input_alice.split(" "),300)
+    #print '\n'
+    print randomText(input_alice_2.split(" "),300)
     print '\n'
-    print randomText(input_alice.split(" "),300)
-    print '\n'
-    print 'Random Jane Eyre Text:\n'
-    print randomText(input_jane_eyre.split(" "), 30)
-    print '\n'
-    print randomText(input_jane_eyre.split(" "), 330)
+    
+    print 'Random Jane Austin:\n'
+    print randomText(input_ja.split(" "),300)
+    #print 'Random Jane Eyre Text:\n'
+    #print randomText(input_jane_eyre.split(" "), 30)
+    #print '\n'
+    #print randomText(input_jane_eyre.split(" "), 330)
 
 if __name__ == "__main__":
     main()
